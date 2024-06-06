@@ -1,0 +1,16 @@
+Source: kylin-kmre-image-data-x64
+Section: kernel
+Priority: optional
+Maintainer: jianglinxuan (droiing)  <jianglinxuan@kylinos.cn>
+Build-Depends: debhelper (>= 9), make
+Standards-Version: 3.9.5
+Homepage: https://launchpad.dev/
+
+Package: kylin-kmre-image-data-x64
+Architecture: amd64
+Conflicts: kydroid-image-data, kydroid-image-data-x64
+Replaces: kydroid-image-data, kydroid-image-data-x64
+Provides: kylin-kmre-image-data
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: kmre image data for x86_64
+ kmre image data for x86_64.

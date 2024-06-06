@@ -1,0 +1,97 @@
+#!/bin/bash
+
+set -e
+
+function check_docker() {
+	echo "Check docker running status..."
+	local masked=$(systemctl status docker | grep 'Loaded:' | grep -c masked )
+    if [ $masked -gt 0 ]; then
+        echo "Docker is masked, unmasked it"
+        systemctl unmask docker.service
+        systemctl unmask docker.socket
+    fi
+
+    local running=$(systemctl status docker | grep 'Active:' | grep -c running )
+    if [ $running -le 0 ]; then
+        echo "Docker is not running, run it now"
+        return 0
+    fi
+}
+
+function get_newest_image() {
+	local image=""
+	local image_str_list=(`cat /usr/share/kmre/kmre.conf | grep '=' | awk -F= '{print $2}'`)
+	if [[ ${#image_str_list[@]} -eq 2 ]]; then
+		image=${image_str_list[0]}":"${image_str_list[1]}
+	fi
+
+	echo $image
+}
+
+function remove_old_images() {
+	echo "Remove KMRE old images..."
+	local images=(`docker images | grep kmre | awk '{print $1":"$2}'`)
+	local image_count=${#images[@]}
+
+	local newest_image=$(get_newest_image)
+	#echo "Newest image: $newest_image"
+	local curr_image=$(docker ps | grep kmre | awk '{print $2}')
+
+	if [[ $image_count -le 2 ]]; then
+		return 0
+	fi
+
+	if [[ -z $newest_image ]]; then
+		echo "Can't find newest image"
+		return -1
+	fi
+
+	images=( "${images[*]/$newest_image}" )
+
+	if [[ -n $curr_image ]]; then
+		images=( "${images[*]/$curr_image}" )
+	else
+		local max_ver=0
+		local max_ver_img=""
+
+		for img in $images
+		do
+			local ver=$(echo $img | awk -F- '{print $2}')
+			if [[ `echo "$ver > $max_ver" | bc` -eq 1 ]]; then
+				max_ver=$ver
+				max_ver_img=$img
+			fi
+		done
+
+		#echo "Max version image: $max_ver_img"
+		if [[ -n $max_ver_img ]]; then
+			images=( "${images[*]/$max_ver_img}" )
+		fi
+	fi
+
+	for image in $images
+	do
+		echo "Remove old image: $image"
+		docker rmi $image --force
+	done
+}
+
+
+case "${1}" in
+	configure)
+		check_docker || exit 0
+		docker load -i /usr/share/kmre/kmre-container-image.tar 2>/dev/null || exit 0
+		if [ -f "/lib/systemd/system/kylin-kmre-daemon.service" ];then
+			systemctl restart kylin-kmre-daemon.service 2>/dev/null || exit 0
+			remove_old_images || exit 0
+		fi
+		;;
+	abort-upgrade|abort-remove|abort-deconfigure)
+		;;
+	*)
+		echo "postinst called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+exit 0
