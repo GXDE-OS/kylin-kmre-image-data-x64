@@ -1,4 +1,4 @@
 # Ignore kmre-container-image.tar in this directory
-kmre-container-image.tar
+kmre-container-image.tar*
 # Except this file
 !.gitignore

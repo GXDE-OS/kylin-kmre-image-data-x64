@@ -2,7 +2,10 @@ Source: kylin-kmre-image-data-x64
 Section: kernel
 Priority: optional
 Maintainer: jianglinxuan (droiing)  <jianglinxuan@kylinos.cn>
-Build-Depends: debhelper (>= 9), make
+Build-Depends:
+ debhelper (>= 9),
+ make,
+ aria2
 Standards-Version: 3.9.5
 Homepage: https://launchpad.dev/
 

@@ -14,8 +14,11 @@ KMRE_DIR = /usr/share/kmre
 CONF_FILE = kmre.conf
 DATA_FILE = kmre-container-image.tar
 
-all:
-	@echo "Data package, no compilation required"
+#all:
+#	@echo "Data package, no compilation required"
+
+build:
+	if [ ! -f data/amd64/kmre-container-image.tar ] || [ -f data/amd64/kmre-container-image.tar.aria2 ]; then aria2c https://github.com/GXDE-OS/kylin-kmre-image-data-x64/releases/download/container/kmre-container-image_v3.0-250216.1_amd64.tar -d data/amd64/ -o kmre-container-image.tar -x 16 -s 16 -c ; fi
 
 install:
 	@install -p -D -m 0644 data/$(CONF_FILE) $(DESTDIR)/$(KMRE_DIR)/$(CONF_FILE)
