@@ -1,8 +1,9 @@
-kylin-kmre-image-data-x64 (3.0-250216.1) UNRELEASED; urgency=medium
+kylin-kmre-image-data-x64 (3.0-250216.1gxde1) UNRELEASED; urgency=medium
 
   * 更换翻译层（libndk=>libhoudini）
+  * 修复镜像不匹配的问题
 
- -- gfdgd_xi <3025613752@qq.com>  Mon, 17 Feb 2025 22:07:42 +0800
+ -- gfdgd_xi <3025613752@qq.com>  Tue, 18 Feb 2025 21:55:51 +0800
 
 kylin-kmre-image-data-x64 (3.0-231107.10) v101; urgency=medium
 
